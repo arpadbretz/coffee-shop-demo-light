@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Montserrat, Cormorant_Garamond } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
 
-const montserrat = Montserrat({
-  variable: "--font-sans",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
+  weight: ["400", "600", "700", "800"], // Bold and punchy
 });
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-serif",
-  weight: ["300", "400", "500", "600"],
+const dmSans = DM_Sans({
+  variable: "--font-dm",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Lumina | Specialty Coffee",
-  description: "High-end minimal specialty coffee shop.",
+  title: "VIBE | Újhullámos Kávézó",
+  description: "Vad pörkölések, brutális energiák. Ébreszd fel magad.",
 };
 
 export default function RootLayout({
@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="hu" className="scroll-smooth">
       <body
-        className={`${montserrat.variable} ${cormorant.variable} antialiased bg-[#F9F8F6] text-[#1A1918] font-sans selection:bg-[#C4A484] selection:text-white`}
+        className={`${syne.variable} ${dmSans.variable} antialiased bg-oat text-ink font-sans selection:bg-orange selection:text-white`}
       >
         <LenisProvider>
           {children}
