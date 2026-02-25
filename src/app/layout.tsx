@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Montserrat, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import LenisProvider from "@/components/LenisProvider";
 
-const inter = Inter({
-  variable: "--font-inter",
+const montserrat = Montserrat({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600"],
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Coffee Shop - Világos, Skandináv Design",
-  description: "Letisztult, modern kávézó világos dizájnnal.",
+  title: "Lumina | Specialty Coffee",
+  description: "High-end minimal specialty coffee shop.",
 };
 
 export default function RootLayout({
@@ -26,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="hu" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${outfit.variable} antialiased bg-slate-50 text-slate-900 font-sans`}
+        className={`${montserrat.variable} ${cormorant.variable} antialiased bg-[#F9F8F6] text-[#1A1918] font-sans selection:bg-[#C4A484] selection:text-white`}
       >
         <LenisProvider>
           {children}

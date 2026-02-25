@@ -1,337 +1,230 @@
 "use client";
 
 import { motion, Variants, useScroll, useTransform } from "framer-motion";
-import { Coffee, MapPin, Phone, Mail, Clock, Instagram, Facebook, Menu } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { ArrowRight, ArrowDownRight, Instagram, Facebook } from "lucide-react";
+import { useRef } from "react";
 
-// --- Animation Variants ---
-const staggerContainer: Variants = {
+// --- Minimalist Stagger & Fade Animations ---
+const staggerWrapper: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
   },
 };
 
-const fadeUpText: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } },
+const textFadeUp: Variants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } },
 };
 
-const slideInRight: Variants = {
-  hidden: { opacity: 0, x: 20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } },
+const imageReveal: Variants = {
+  hidden: { scale: 1.1, opacity: 0 },
+  visible: { scale: 1, opacity: 1, transition: { duration: 1.5, ease: [0.25, 1, 0.5, 1] } },
 };
 
 export default function Home() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollYProgress } = useScroll();
-  const heroRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"]
+  });
 
-  // Parallax calculations for hero background
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacityBg = useTransform(scrollYProgress, [0, 0.3], [1, 0.2]);
-
-  // Handle sticky nav backdrop
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  // Extremely subtle parallax
+  const headerY = useTransform(scrollYProgress, [0, 0.2], [0, 100]);
+  const imgY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 noise-bg font-sans selection:bg-terracotta-500 selection:text-slate-50">
+    <main ref={containerRef} className="bg-alabaster min-h-screen relative text-charcoal">
+      {/* Global Grain Overlay for texture */}
+      <div className="fixed inset-0 noise-overlay z-50"></div>
 
-      {/* NAVIGATION */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'glass-nav py-4' : 'bg-transparent py-6'}`}
-      >
-        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-          <div className="font-serif text-2xl tracking-tight text-slate-900 font-bold">Lumina<span className="text-terracotta-500">.</span></div>
-          <div className="hidden md:flex gap-10 items-center justify-center">
-            {["Rólunk", "Filozófia", "Itallap", "Galéria"].map((item, i) => (
-              <a key={i} href="#" className="font-serif text-xs uppercase tracking-[0.1em] font-medium text-slate-700 hover:text-terracotta-500 transition-colors duration-300">
-                {item}
-              </a>
-            ))}
-          </div>
-          <button className="md:hidden text-slate-700 hover:text-terracotta-500 transition-colors">
-            <Menu className="w-6 h-6" />
-          </button>
-          <button className="hidden md:block bg-slate-900 border border-slate-900 text-slate-50 hover:bg-terracotta-500 hover:border-terracotta-500 px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300">
-            Asztalfoglalás
-          </button>
-        </div>
-      </motion.nav>
-
-      {/* SECTION 1: CLEAN PARALLAX HERO */}
-      <section ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden bg-slate-100">
-        {/* Parallax Background */}
-        <motion.div
-          style={{ y: yBg, opacity: opacityBg }}
-          className="absolute inset-0 z-0 h-[120%]"
-        >
-          {/* Light overlay to make text pop */}
-          <div className="absolute inset-0 bg-white/30 z-10 backdrop-blur-[2px]"></div>
-          <div
-            className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=2500')] bg-cover bg-center"
-          ></div>
+      {/* --- MINIMAL NAVIGATION --- */}
+      <nav className="fixed w-full top-0 z-40 px-6 md:px-12 py-8 mix-blend-difference text-white flex justify-between items-center pointer-events-none">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.5 }} className="font-serif text-2xl tracking-widest uppercase pointer-events-auto">
+          Lumina
         </motion.div>
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, delay: 0.6 }} className="text-xs uppercase tracking-[0.2em] pointer-events-auto cursor-pointer hover:text-camel transition-colors">
+          Asztalfoglalás
+        </motion.div>
+      </nav>
 
-        {/* Hero Content */}
-        <div className="relative z-20 w-full max-w-7xl mx-auto px-6 pt-20 flex flex-col items-center text-center">
+      <div className="fixed w-full bottom-0 z-40 px-6 md:px-12 py-8 mix-blend-difference text-white flex justify-between items-end pointer-events-none hidden md:flex">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.7 }} className="text-[10px] uppercase tracking-[0.2em] vertical-rl rotate-180">
+          Budapest, Hungary
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.8 }} className="text-[10px] uppercase tracking-[0.2em] flex items-center gap-4 vertical-rl rotate-180">
+          Scroll <ArrowRight className="w-3 h-3 rotate-90" />
+        </motion.div>
+      </div>
+
+      {/* --- EDITORIAL HERO --- */}
+      <section className="h-screen flex flex-col justify-end pb-20 px-6 md:px-12 relative overflow-hidden bg-alabaster">
+        {/* Background Image Container with parallax */}
+        <div className="absolute inset-x-6 inset-y-6 md:inset-x-12 md:inset-y-12 overflow-hidden z-0">
           <motion.div
-            variants={staggerContainer}
+            style={{ y: imgY }}
             initial="hidden"
             animate="visible"
-            className="flex flex-col items-center"
+            variants={imageReveal}
+            className="w-full h-[120%] -top-[10%] relative"
           >
-            <motion.div variants={fadeUpText} className="flex items-center gap-4 mb-4">
-              <span className="h-[1px] w-8 bg-terracotta-500 block"></span>
-              <span className="text-terracotta-500 font-serif tracking-[0.2em] font-medium uppercase text-xs md:text-sm">Világos Pörkölés</span>
-              <span className="h-[1px] w-8 bg-terracotta-500 block"></span>
-            </motion.div>
-
-            <motion.h1
-              variants={fadeUpText}
-              className="font-serif text-6xl md:text-[8rem] text-slate-900 mb-6 leading-[0.95] tracking-tighter text-balance font-bold"
-            >
-              Lumina <br />
-              <span className="text-outline italic font-light hover:text-terracotta-500 transition-colors duration-500 cursor-default tracking-normal">Kávézó.</span>
-            </motion.h1>
-
-            <motion.p variants={fadeUpText} className="text-slate-700 text-lg md:text-xl max-w-xl mx-auto mb-12 text-balance leading-relaxed">
-              Kezdd a napot frissességgel és letisztultsággal. Skandináv minimalizmus, gondosan szelektált, tiszta ízű világos pörkölésű kávék kíséretében.
-            </motion.p>
-          </motion.div>
-
-          {/* Scroll Indicator */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 1.5, ease: "easeOut" }}
-            className="absolute bottom-12 flex flex-col items-center gap-4"
-          >
-            <span className="text-slate-500 text-[10px] font-semibold tracking-widest uppercase mb-4">Felfedezés</span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              className="w-[1px] h-12 bg-gradient-to-b from-slate-400 to-transparent"
-            ></motion.div>
+            <div className="absolute inset-0 bg-black/10 z-10"></div>
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=2500')] bg-cover bg-center"></div>
           </motion.div>
         </div>
+
+        <motion.div
+          style={{ y: headerY }}
+          variants={staggerWrapper}
+          initial="hidden"
+          animate="visible"
+          className="relative z-20 text-white mix-blend-difference"
+        >
+          <div className="overflow-hidden">
+            <motion.h1 variants={textFadeUp} className="font-serif text-[12vw] leading-[0.85] tracking-tight font-light uppercase">
+              Tiszta
+            </motion.h1>
+          </div>
+          <div className="overflow-hidden flex items-center gap-8 md:gap-16">
+            <motion.div variants={textFadeUp} className="hidden md:block w-32 h-[1px] bg-white"></motion.div>
+            <motion.h1 variants={textFadeUp} className="font-serif text-[12vw] leading-[0.85] tracking-tight font-light uppercase italic opacity-90">
+              Esszencia
+            </motion.h1>
+          </div>
+        </motion.div>
       </section>
 
-      {/* SECTION 2: THE EXPERIENCE */}
-      <section className="py-32 md:py-48 px-6 relative z-10 bg-slate-50">
-        <div className="max-w-7xl mx-auto">
+      {/* --- STATEMENT / PHILOSOPHY --- */}
+      <section className="min-h-screen py-32 px-6 md:px-12 flex items-center border-b border-editorial">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-16 md:gap-32">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeUpText}
-            className="flex flex-col md:flex-row justify-between items-end mb-20"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className="md:w-1/3 flex flex-col justify-between"
           >
-            <div className="md:w-1/2">
-              <h2 className="font-serif font-bold text-4xl md:text-5xl lg:text-6xl text-slate-900 mb-4 tracking-tight">Könnyed <span className="text-terracotta-500 italic font-medium">Lendület</span></h2>
-              <p className="text-slate-500 font-normal max-w-sm">Minden apró részlet a nyugodt, fókuszált napindítást szolgálja.</p>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 mb-8 block font-semibold">01 / Filozófia</span>
+            <div className="aspect-[3/4] overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-1000">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=1500')] bg-cover bg-center hover:scale-105 transition-transform duration-[2s] ease-out"></div>
             </div>
           </motion.div>
 
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12"
+            variants={staggerWrapper}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            variants={staggerContainer}
+            className="md:w-2/3 flex flex-col justify-center"
+          >
+            <div className="overflow-hidden mb-12">
+              <motion.h2 variants={textFadeUp} className="font-serif text-3xl md:text-5xl lg:text-6xl leading-[1.1] font-light">
+                A kávézás rituálé, nem puszta rutin. A világos pörkölés megőrzi a kávébab eredeti, őszinte karakterét.
+              </motion.h2>
+            </div>
+
+            <div className="overflow-hidden max-w-md">
+              <motion.p variants={textFadeUp} className="text-charcoal/60 leading-relaxed text-sm md:text-base mb-12">
+                A minimalizmus nálunk nem a hiányról szól, hanem a lényeg kiemeléséről. Nincsenek felesleges adalékok, csak a tiszta víz, a gondosan válogatott single-origin kávébab és a precíz baristamunka.
+              </motion.p>
+            </div>
+
+            <motion.div variants={textFadeUp} className="flex items-center gap-4 group cursor-pointer inline-flex w-fit">
+              <span className="text-xs uppercase tracking-widest font-semibold border-b border-charcoal/30 pb-1 group-hover:border-camel group-hover:text-camel transition-colors">Történetünk</span>
+              <ArrowDownRight className="w-4 h-4 text-charcoal/50 group-hover:text-camel group-hover:-rotate-45 transition-all duration-500" />
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- THE MENU (EDITORIAL GRID) --- */}
+      <section className="py-32 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-between items-end mb-24 border-b border-editorial pb-8">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 font-semibold">02 / Kínálat</span>
+            <h3 className="font-serif text-xl italic font-light">Szelekció</h3>
+          </div>
+
+          <motion.div
+            variants={staggerWrapper}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16"
           >
             {[
-              { title: "Világos Pörkölés", num: "01", desc: "Kávéinkat világos profilra pörköljük, így a babok eredeti, gyümölcsös és virágos jegyei érvényesülnek a keserűség helyett." },
-              { title: "Skandináv Tér", num: "02", desc: "Tágas, világos, natúr tölgyfával és rengeteg szobanövénnyel dekorált letisztult környezet." },
-              { title: "Lassú Rituálé", num: "03", desc: "A minőséghez idő kell. Filterkávéinkat kézzel készítjük el, hogy minden ízjegyet precízen kioldjunk." }
+              { n: "Espresso", d: "Tiszta, világos, savas textúra.", p: "850" },
+              { n: "Flat White", d: "Dupla ristretto, hajszálvékony selymes mikróhab.", p: "1350" },
+              { n: "Cortado", d: "Kiegyensúlyozott espresso és tejharmónia.", p: "1050" },
+              { n: "V60 Filter", d: "Lassú csepegtetős, elegáns teaszerű ízprofil.", p: "1650" },
+              { n: "Matcha", d: "Ceremoniális kategória közvetlenül Japánból.", p: "1550" },
+              { n: "Sütemények", d: "Helyben sült, kézműves fúziós desszertek.", p: "1200+" },
             ].map((item, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUpText}
-                className="bg-white p-10 lg:p-12 border border-slate-100 shadow-sm hover:shadow-xl rounded-3xl group hover:-translate-y-2 transition-all duration-500 relative overflow-hidden"
-              >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-terracotta-400 to-terracotta-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-
-                <h3 className="font-serif font-bold text-2xl mb-4 text-slate-900">{item.title}</h3>
-                <p className="text-slate-500 font-normal leading-relaxed text-sm lg:text-base">
-                  {item.desc}
-                </p>
-                <div className="mt-8 font-serif text-5xl font-bold text-slate-100 group-hover:text-slate-200 transition-colors duration-300 pointer-events-none select-none">
-                  {item.num}
+              <motion.div key={i} variants={textFadeUp} className="group relative">
+                <div className="flex justify-between items-baseline mb-3">
+                  <h4 className="font-serif text-3xl font-light group-hover:text-camel transition-colors duration-500">{item.n}</h4>
+                  <span className="text-sm tracking-widest font-medium text-charcoal/60">{item.p}</span>
                 </div>
+                <p className="text-charcoal/50 text-sm tracking-wide">{item.d}</p>
+                <div className="absolute -bottom-6 left-0 w-full h-[1px] bg-sand origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700"></div>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* SECTION 3: VISUAL MENU WITH OVERLAYS */}
-      <section className="py-24 md:py-32 px-6 bg-slate-100 relative overflow-hidden">
-        {/* Subtle decorative background circle */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white rounded-full translate-x-1/2 -translate-y-1/2 opacity-50 blur-3xl pointer-events-none"></div>
-
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row-reverse gap-16 lg:gap-24 items-center relative z-10">
-
-          {/* Menu Image Highlight */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="w-full lg:w-1/2 relative group"
-          >
-            <div className="absolute -inset-4 bg-terracotta-500 rounded-bl-[4rem] rounded-tr-[4rem] transform translate-y-4 -translate-x-4 transition-transform duration-700 group-hover:translate-x-0 group-hover:translate-y-0 opacity-10"></div>
-            <div className="relative aspect-square overflow-hidden rounded-bl-[3rem] rounded-tr-[3rem] shadow-2xl">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&q=80&w=1500')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"></div>
-            </div>
-          </motion.div>
-
-          {/* Menu List */}
-          <div className="w-full lg:w-1/2">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={fadeUpText}
-              className="mb-12"
-            >
-              <h2 className="font-serif font-bold text-4xl md:text-5xl text-slate-900 mb-6">Tiszta Ízek</h2>
-            </motion.div>
-
-            <motion.div
-              className="space-y-6"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              {[
-                { name: "Espresso", desc: "Savina, gyümölcsös és élénk textúra.", price: "850 Ft" },
-                { name: "Cortado", desc: "Espresso minimális, lágy tejhabbal.", price: "1050 Ft" },
-                { name: "Flat White", desc: "Dupla ristretto selymes tejjel, könnyed élmény.", price: "1350 Ft" },
-                { name: "V60 Filter", desc: "Világos pörkölés, filteren átcsöpögtetve. Teaszerű.", price: "1650 Ft" },
-                { name: "Matcha Latte", desc: "Prémium japán matcha zabtejjel lágyítva.", price: "1550 Ft" },
-              ].map((item, i) => (
-                <motion.div key={i} variants={slideInRight} className="group cursor-pointer bg-white p-5 rounded-2xl border border-slate-100 hover:border-terracotta-400 hover:shadow-md transition-all duration-300">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-serif font-bold text-xl text-slate-800 group-hover:text-terracotta-500 transition-colors duration-300">{item.name}</h4>
-                      <p className="text-slate-500 text-sm mt-1">{item.desc}</p>
-                    </div>
-                    <div className="text-slate-900 font-semibold text-lg bg-slate-50 px-4 py-2 rounded-xl group-hover:bg-terracotta-50 group-hover:text-terracotta-600 transition-colors">
-                      {item.price}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 4: GALLERY */}
-      <section className="py-24 md:py-32 px-6 bg-slate-50">
+      {/* --- FULL WIDTH IMAGE BREAK --- */}
+      <section className="h-[70vh] w-full overflow-hidden relative">
         <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUpText}
-          className="max-w-7xl mx-auto mb-16"
-        >
-          <h2 className="font-serif font-bold text-4xl md:text-5xl text-slate-900">Galéria</h2>
-        </motion.div>
-
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            "https://images.unsplash.com/photo-1495474472205-51f4034fa04f?auto=format&fit=crop&q=80&w=1500",
-            "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=1000",
-            "https://images.unsplash.com/photo-1627448375005-4c07d3539fb0?auto=format&fit=crop&q=80&w=1000",
-          ].map((src, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: i * 0.1 }} viewport={{ once: true }}
-              className="relative aspect-[4/5] rounded-3xl overflow-hidden group shadow-sm"
-            >
-              <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110" style={{ backgroundImage: `url(${src})` }} />
-              {/* Hover overlay */}
-              <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/10 transition-colors duration-500"></div>
-            </motion.div>
-          ))}
-        </div>
+          initial={{ scale: 1.1 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center grayscale opacity-80"
+        ></motion.div>
+        <div className="absolute inset-0 bg-alabaster/10 mix-blend-overlay"></div>
       </section>
 
-      {/* SECTION 5: FOOTER */}
-      <section className="bg-slate-900 pt-24 pb-8 px-6 overflow-hidden relative text-slate-100">
+      {/* --- FOOTER / CONTACT --- */}
+      <section className="py-32 px-6 md:px-12 text-center flex flex-col items-center justify-center">
+        <span className="text-[10px] uppercase tracking-[0.2em] text-charcoal/50 mb-16 block font-semibold">03 / Látogatás</span>
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="font-serif text-[8vw] md:text-[6vw] leading-none tracking-tight font-light mb-16 hover:text-camel transition-colors cursor-pointer"
+        >
+          Foglaljon Asztalt
+        </motion.h2>
 
-            {/* Left Col */}
-            <motion.div
-              initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}
-            >
-              <motion.h3 variants={fadeUpText} className="font-serif font-bold text-4xl text-white mb-6">Találjuk meg<br />a közös hangot.</motion.h3>
-              <motion.p variants={fadeUpText} className="text-slate-400 font-light mb-10 max-w-sm">
-                Várunk szeretettel letisztult környezetünkben egy frissítő filterkávéra és egy jó beszélgetésre.
-              </motion.p>
-
-              <div className="space-y-6">
-                {[{ icon: MapPin, t1: "1051 Budapest", t2: "Letisztult utca 8." }, { icon: Clock, t1: "H-P: 07:00 - 17:00", t2: "Szo-V: 08:30 - 15:00" }, { icon: Phone, t1: "Hívj minket", t2: "+36 30 987 6543" }].map((item, i) => (
-                  <motion.div key={i} variants={fadeUpText} className="flex items-center gap-5 group">
-                    <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center group-hover:bg-terracotta-500 group-hover:rotate-6 transition-all duration-300">
-                      <item.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium text-sm">{item.t1}</p>
-                      <p className="text-slate-400 font-light text-sm">{item.t2}</p>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Right Col: Map */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 1 }} viewport={{ once: true }}
-              className="h-[350px] lg:h-auto rounded-[2rem] overflow-hidden relative group"
-            >
-              <div className="absolute inset-0 bg-slate-900/20 group-hover:bg-transparent pointer-events-none transition-colors duration-500 mix-blend-color z-10"></div>
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2695.538561141724!2d19.049405615626356!3d47.49896747917726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDfCsDI5JzU2LjMiTiAxOcKwMDMnMDUuNyJF!5e0!3m2!1sen!2shu!4v1655000000000!5m2!1sen!2shu"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: 'grayscale(0.6) opacity(0.9) contrast(1.1)' }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="absolute inset-0"
-              ></iframe>
-            </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-4xl border-t border-editorial pt-16">
+          <div className="flex flex-col items-center">
+            <span className="text-xs uppercase tracking-widest text-charcoal/50 mb-3 block">Lokáció</span>
+            <p className="font-serif text-xl font-light">1051 Budapest,<br />Letisztult utca 8.</p>
           </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-8 border-t border-slate-800">
-            <p className="font-serif font-bold text-xl text-white">Lumina.</p>
-            <p className="text-slate-500 text-xs font-semibold tracking-widest uppercase">© 2026 LUMINA. Minden jog fenntartva.</p>
+          <div className="flex flex-col items-center">
+            <span className="text-xs uppercase tracking-widest text-charcoal/50 mb-3 block">Nyitvatartás</span>
+            <p className="font-serif text-xl font-light">H-P: 08:00 - 17:00<br />Szo-V: 09:00 - 15:00</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-xs uppercase tracking-widest text-charcoal/50 mb-3 block">Kapcsolat</span>
+            <p className="font-serif text-xl font-light mb-4">+36 30 987 6543<br />hello@lumina.hu</p>
             <div className="flex gap-4">
-              {[Instagram, Facebook].map((Icon, i) => (
-                <a key={i} href="#" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-400 hover:text-white hover:border-terracotta-500 hover:bg-terracotta-500 transition-all duration-300">
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
+              <Instagram className="w-4 h-4 text-charcoal/50 hover:text-camel cursor-pointer transition-colors" />
+              <Facebook className="w-4 h-4 text-charcoal/50 hover:text-camel cursor-pointer transition-colors" />
             </div>
           </div>
         </div>
+
+        <div className="mt-32 text-[10px] uppercase tracking-widest text-charcoal/30 flex w-full justify-between items-end border-t border-editorial pt-6">
+          <span>© 2026 Lumina.</span>
+          <span className="font-serif italic text-sm normal-case">By Prometheus</span>
+        </div>
       </section>
+
     </main>
   );
 }
